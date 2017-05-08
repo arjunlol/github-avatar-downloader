@@ -5,6 +5,13 @@ require('dotenv').config();
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
+//error handling of env file
+if(!process.env){
+  throw ".env file is missing or is not in root director";
+} else if (!process.env.USERNAME || !process.env.TOKEN){
+  throw ".env file is missing information";
+}
+
 //github username here
 var GITHUB_USER = process.env.USERNAME;
 //github token here
@@ -13,6 +20,11 @@ var GITHUB_TOKEN = process.env.TOKEN;
 var USER_AGENT = 'GitHub Avatar Downloader - Student Project';
 //accepting command line arguments for the owner of the repo and the reponame respectively
 var OWNER_AND_REPONAME = process.argv.slice(2);
+
+//incorrect number of argument error
+if (!(OWNER_AND_REPONAME.length == 2)){
+  throw "Please input correct number of arguments (2)";
+}
 
 //function uses request library to fetch list of contributors via HTTPS for respective repo
 //cb is a callback function to handle asynchronous result returns
@@ -36,17 +48,20 @@ function getRepoContributors(repoOwner, repoName, cb) {
 
 //function will make request to given URL, saving resulting image file to path
 function downloadImageByURL (url, filepath) {
+  //exits program with error if the avatars folder does not exist
+  if (!fs.existsSync("./avatars")){
+    throw "file ./avatars does not exist. Please create avatars folder in root directory";
+  }
+
   request.get(url)
     .pipe(fs.createWriteStream("./avatars/" + filepath));
 }
 
 //invoking getRepoContributors function using hard code values
 getRepoContributors (OWNER_AND_REPONAME[0], OWNER_AND_REPONAME[1], function(err, result) {
-  //does not execute callback if arguments for owner and repo not passed in command line
-  if(!OWNER_AND_REPONAME[0] && !OWNER_AND_REPONAME[1]){
-    console.log("Please input arguments for both the owner and the name of the repo, respectively");
-    console.log('Thanks.')
-    return;
+  //check if owner/repo exists
+  if (!result[0]){
+    throw "The provided owner/repo does not exist or invalid credentials in .env";
   }
   console.log("Errors:", err);
   //loops through JSON object array and downloads all avatar images
