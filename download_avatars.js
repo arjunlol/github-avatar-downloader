@@ -10,6 +10,8 @@ var GITHUB_USER = "arjunlol";
 var GITHUB_TOKEN = "02adcf4559363526c768a4aca3f705afe7f689d2";
 //user Agent variable
 var USER_AGENT = 'GitHub Avatar Downloader - Student Project';
+//accepting command line arguments for the owner of the repo and the reponame respectively
+var OWNER_AND_REPONAME = process.argv.slice(2);
 
 //function uses request library to fetch list of contributors via HTTPS for respective repo
 //cb is a callback function to handle asynchronous result returns
@@ -25,13 +27,10 @@ function getRepoContributors(repoOwner, repoName, cb) {
       "user-agent": USER_AGENT
     }
   }
-
   //passes error and parsed JSON body to callback function defined below
   request.get(options, function (err, response) {
     cb(err, JSON.parse(response.body));
   });
-
-
 }
 
 //function will make request to given URL, saving resulting image file to path
@@ -40,11 +39,13 @@ function downloadImageByURL(url, filepath) {
     .pipe(fs.createWriteStream("./avatars/" + filepath));
 }
 
-//test hard coded image download function
-downloadImageByURL("https://avatars2.githubusercontent.com/u/2741?v=3&s=466","kvirani.jpg");
-
 //invoking getRepoContributors function using hard code values
-getRepoContributors("jquery", "jquery", function(err, result) {
+getRepoContributors(OWNER_AND_REPONAME[0], OWNER_AND_REPONAME[1], function(err, result) {
+  if(!OWNER_AND_REPONAME[0] && !OWNER_AND_REPONAME[1]){
+    console.log("Please input arguments for both the owner and the name of the repo, respectively");
+    console.log('Thanks.')
+    return;
+  }
   console.log("Errors:", err);
   //loops through JSON object array and downloads all avatar images
   for (var i = 0; i < result.length; i++){
