@@ -46,8 +46,8 @@ downloadImageByURL("https://avatars2.githubusercontent.com/u/2741?v=3&s=466","kv
 //invoking getRepoContributors function using hard code values
 getRepoContributors("jquery", "jquery", function(err, result) {
   console.log("Errors:", err);
-  //loops through JSON object array and logs avatar url values
+  //loops through JSON object array and downloads all avatar images
   for (var i = 0; i < result.length; i++){
-    console.log(result[i].avatar_url);
+    downloadImageByURL(result[i].avatar_url, result[i].login + ".jpg");
   }
 });
