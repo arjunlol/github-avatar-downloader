@@ -6,7 +6,7 @@ console.log('Welcome to the GitHub Avatar Downloader!');
 //github username here
 var GITHUB_USER = "arjunlol";
 //github token here
-var GITHUB_TOKEN = "";
+var GITHUB_TOKEN = "02adcf4559363526c768a4aca3f705afe7f689d2";
 //user Agent variable
 var USER_AGENT = 'GitHub Avatar Downloader - Student Project';
 
@@ -26,14 +26,18 @@ function getRepoContributors(repoOwner, repoName, cb) {
   }
 
   //logs body of JSON
-  request(options, function (err, response, body) {
-    console.log(body);
+  request.get(options, function (err, response) {
+    cb(err, JSON.parse(response.body));
   });
+
 
 }
 
 //invoking getRepoContributors function using hard code values
 getRepoContributors("jquery", "jquery", function(err, result) {
   console.log("Errors:", err);
-  console.log("Result:", result);
+  //loops through JSON object array and logs avatar url values
+  for (var i = 0; i < result.length; i++){
+    console.log(result[i].avatar_url);
+  }
 });
